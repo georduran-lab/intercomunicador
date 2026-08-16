@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bloc de Notas Sync GitHub</title>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      color: #ffffff;
+      font-family: sans-serif;
+      display: table;
+    }
+
+    /* Envoltorio para centrado vertical y horizontal en Android 4.4 / KitKat */
+    .viewport-center {
+      display: table-cell;
+      vertical-align: middle;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+    }
+
+    /* Tarjeta o contenedor principal centrado */
+    .app-container {
+      display: table;
+      width: 90%;
+      max-width: 850px;
+      margin: 0 auto;
+      box-sizing: border-box;
+      padding: 20px;
+      background-color: #181818;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      text-align: left;
+    }
+
+    .app-row {
+      display: table-row;
+    }
+
+    /* Panel Izquierdo: Crear y Lista de Notas */
+    .sidebar {
+      display: table-cell;
+      width: 38%;
+      vertical-align: top;
+      padding-right: 16px;
+      border-right: 1px solid #333;
+    }
+
+    /* Panel Derecho: Editor y GitHub Sync */
+    .editor {
+      display: table-cell;
+      width: 62%;
+      vertical-align: top;
+      padding-left: 16px;
+    }
+
+    h3 {
+      margin-top: 0;
+      color: #00ff66;
+      font-size: 16px;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: #222224;
+      border: 1px solid #333;
+      color: #fff;
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 8px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+
+    textarea {
+      height: 180px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #0a84ff;
+      border: none;
+      color: #fff;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+
+    .btn-green {
+      background-color: #34c759;
+    }
+
+    .status {
+      font-size: 12px;
+      color: #8e8e93;
+      text-align: center;
+      margin-top: 6px;
+    }
+
+    .notes-list {
+      margin-top: 8px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .note-item {
+      background: #2c2c2e;
+      padding: 8px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      cursor: pointer;
+    }
+
+    .note-title {
+      font-weight: bold;
+      font-size: 13px;
+      color: #00ff66;
+    }
+
+    .note-subtitle {
+      font-size: 11px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="viewport-center">
+    <div class="app-container">
+      <div class="app-row">
+        
+        <!-- Panel Izquierdo: Gestión de Notas -->
+        <div class="sidebar">
+          <h3>📝 Crear Nota</h3>
+          <input type="text" id="nota-titulo" placeholder="Título de la nota">
+          <input type="text" id="nota-subtitulo" placeholder="Subtítulo / Categoría">
+          <button onclick="crearNuevaNota()">➕ Nueva Nota</button>
+
+          <hr style="border-color: #333; margin: 12px 0;">
+
+          <h3>📂 Mis Notas</h3>
+          <div class="notes-list" id="lista-notas">
+            <div class="status">Sin notas cargadas</div>
+          </div>
+        </div>
+
+        <!-- Panel Derecho: Editor y GitHub Sync -->
+        <div class="editor">
+          <h3>⚙️ Sincronización</h3>
+          <input type="password" id="gh-token" placeholder="GitHub Access Token (PAT)">
+          
+          <textarea id="contenido-nota" placeholder="Escribe el contenido de tu nota aquí..."></textarea>
+
+          <button onclick="guardarEnGitHub()">💾 Guardar en GitHub</button>
+          <button class="btn-green" onclick="cargarDesdeGitHub()">🔄 Cargar de GitHub</button>
+
+          <div class="status" id="status-txt">Estado: Desconectado</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var CONFIG = {
+      usuario: "TU_USUARIO_GITHUB",
+      repo: "NOMBRE_DE_TU_REPO",
+      archivo: "notas.json"
+    };
+
+    var fileSHA = "";
+    var coleccionNotas = [];
+    var notaSeleccionadaIndex = -1;
+
+    document.getElementById('gh-token').value = localStorage.getItem('gh_pat_token') || '';
+
+    function crearNuevaNota() {
+      var titulo = document.getElementById('nota-titulo').value.trim();
+      var subtitulo = document.getElementById('nota-subtitulo').value.trim();
+      var contenido = document.getElementById('contenido-nota').value;
+
+      if (!titulo) {
+        alert("Ingresa al menos un título para la nota.");
+        return;
+      }
+
+      var nuevaNota = {
+        titulo: titulo,
+        subtitulo: subtitulo,
+        contenido: contenido
+      };
+
+      coleccionNotas.push(nuevaNota);
+      document.getElementById('nota-titulo').value = '';
+      document.getElementById('nota-subtitulo').value = '';
+      document.getElementById('contenido-nota').value = '';
+
+      renderizarListaNotas();
+    }
+
+    function seleccionarNota(index) {
+      notaSeleccionadaIndex = index;
+      var nota = coleccionNotas[index];
+      document.getElementById('nota-titulo').value = nota.titulo;
+      document.getElementById('nota-subtitulo').value = nota.subtitulo;
+      document.getElementById('contenido-nota').value = nota.contenido;
+    }
+
+    function renderizarListaNotas() {
+      var contenedor = document.getElementById('lista-notas');
+      contenedor.innerHTML = '';
+
+      if (coleccionNotas.length === 0) {
+        contenedor.innerHTML = '<div class="status">No hay notas guardadas</div>';
+        return;
+      }
+
+      for (var i = coleccionNotas.length - 1; i >= 0; i--) {
+        (function(index) {
+          var item = document.createElement('div');
+          item.className = 'note-item';
+          item.onclick = function() { seleccionarNota(index); };
+
+          var t = document.createElement('div');
+          t.className = 'note-title';
+          t.innerText = coleccionNotas[index].titulo;
+
+          var st = document.createElement('div');
+          st.className = 'note-subtitle';
+          st.innerText = coleccionNotas[index].subtitulo || 'Sin subtítulo';
+
+          item.appendChild(t);
+          item.appendChild(st);
+          contenedor.appendChild(item);
+        })(i);
+      }
+    }
+
+    function cargarDesdeGitHub() {
+      var token = document.getElementById('gh-token').value.trim();
+      if (!token) {
+        document.getElementById('status-txt').innerText = "⚠️ Ingresa un GitHub Token válido.";
+        return;
+      }
+      localStorage.setItem('gh_pat_token', token);
+      document.getElementById('status-txt').innerText = "⏳ Cargando desde GitHub...";
+
+      var url = "https://api.github.com/repos/" + CONFIG.usuario + "/" + CONFIG.repo + "/contents/" + CONFIG.archivo;
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+      xhr.setRequestHeader("Authorization", "token " + token);
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            var data = JSON.parse(xhr.responseText);
+            fileSHA = data.sha;
+            var jsonTexto = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
+            try {
+              coleccionNotas = JSON.parse(jsonTexto);
+              renderizarListaNotas();
+              document.getElementById('status-txt').innerText = "✅ Sincronizado correctamente.";
+            } catch(e) {
+              document.getElementById('status-txt').innerText = "⚠️ Formato de archivo incompatible.";
+            }
+          } else if (xhr.status === 404) {
+            document.getElementById('status-txt').innerText = "📄 Archivo notas.json no existe en GitHub. Crea una nota y guarda.";
+          } else {
+            document.getElementById('status-txt').innerText = "❌ Error (HTTP " + xhr.status + ").";
+          }
+        }
+      };
+
+      xhr.onerror = function () {
+        document.getElementById('status-txt').innerText = "❌ Error de red.";
+      };
+
+      xhr.send();
+    }
+
+    function guardarEnGitHub() {
+      var token = document.getElementById('gh-token').value.trim();
+
+      if (!token) {
+        alert("Necesitas ingresar el Token de GitHub para poder guardar.");
+        return;
+      }
+
+      var titulo = document.getElementById('nota-titulo').value.trim();
+      var subtitulo = document.getElementById('nota-subtitulo').value.trim();
+      var contenido = document.getElementById('contenido-nota').value;
+
+      if (notaSeleccionadaIndex >= 0 && coleccionNotas[notaSeleccionadaIndex]) {
+        coleccionNotas[notaSeleccionadaIndex].titulo = titulo || coleccionNotas[notaSeleccionadaIndex].titulo;
+        coleccionNotas[notaSeleccionadaIndex].subtitulo = subtitulo;
+        coleccionNotas[notaSeleccionadaIndex].contenido = contenido;
+      } else if (titulo) {
+        coleccionNotas.push({ titulo: titulo, subtitulo: subtitulo, contenido: contenido });
+      }
+
+      document.getElementById('status-txt').innerText = "⏳ Guardando en GitHub...";
+
+      var jsonTexto = JSON.stringify(coleccionNotas);
+      var textoBase64 = btoa(unescape(encodeURIComponent(jsonTexto)));
+      var url = "https://api.github.com/repos/" + CONFIG.usuario + "/" + CONFIG.repo + "/contents/" + CONFIG.archivo;
+
+      var bodyData = {
+        message: "Actualización de colección de notas",
+        content: textoBase64
+      };
+
+      if (fileSHA !== "") {
+        bodyData.sha = fileSHA;
+      }
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("PUT", url, true);
+      xhr.setRequestHeader("Authorization", "token " + token);
+      xhr.setRequestHeader("Content-Type", "application/json");
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200 || xhr.status === 201) {
+            var resData = JSON.parse(xhr.responseText);
+            fileSHA = resData.content.sha;
+            renderizarListaNotas();
+            document.getElementById('status-txt').innerText = "🚀 Guardado exitosamente.";
+          } else {
+            document.getElementById('status-txt').innerText = "❌ Error al guardar. Revisa permisos.";
+          }
+        }
+      };
+
+      xhr.onerror = function () {
+        document.getElementById('status-txt').innerText = "❌ Error de red.";
+      };
+
+      xhr.send(JSON.stringify(bodyData));
+    }
+
+    if (document.getElementById('gh-token').value) {
+      cargarDesdeGitHub();
+    }
+  </script>
+</body>
+</html>
