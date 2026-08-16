@@ -172,8 +172,8 @@
 
   <script>
     var CONFIG = {
-      usuario: "TU_USUARIO_GITHUB",
-      repo: "NOMBRE_DE_TU_REPO",
+      usuario: "georduran-lab",
+      repo: "intercomunicador",
       archivo: "notas.json"
     };
 
@@ -181,7 +181,11 @@
     var coleccionNotas = [];
     var notaSeleccionadaIndex = -1;
 
-    document.getElementById('gh-token').value = localStorage.getItem('gh_pat_token') || '';
+    // En lugar de leer del navegador, defines el token fijo aquí:
+    var TOKEN_FIJO = "28221998";
+
+    // Y en las funciones cargarDesdeGitHub y guardarEnGitHub usas directamente TOKEN_FIJO:
+    xhr.setRequestHeader("Authorization", "token " + TOKEN_FIJO);
 
     function crearNuevaNota() {
       var titulo = document.getElementById('nota-titulo').value.trim();
