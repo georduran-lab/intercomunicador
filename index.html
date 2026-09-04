@@ -2,359 +2,982 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bloc de Notas Sync GitHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Control de Combustible v4.5</title>
+  
+  <!-- FAVICON SVG INTEGRADO -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffcc00'><path d='M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.22v5.72c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-3h1c.55 0 1 .45 1 1v2.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V10.5c0-1.33-.53-2.53-1.23-3.27zM11 10H5V5h6v5z'/></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231e1e1e'/><g transform='scale(3) translate(4, 4)'><path fill='%23ffcc00' d='M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.22v5.72c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-3h1c.55 0 1 .45 1 1v2.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V10.5c0-1.33-.53-2.53-1.23-3.27zM11 10H5V5h6v5z'/></g></svg>">
+  
   <style>
+    * {
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+    }
+
     html, body {
       width: 100%;
       height: 100%;
-      margin: 0;
-      padding: 0;
       background-color: #121212;
       color: #ffffff;
-      font-family: sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
       display: table;
     }
 
-    /* Envoltorio para centrado vertical y horizontal en Android 4.4 / KitKat */
-    .viewport-center {
+    .wrapper-centrado {
       display: table-cell;
       vertical-align: middle;
-      width: 100%;
-      height: 100%;
       text-align: center;
+      padding: 12px;
     }
 
-    /* Tarjeta o contenedor principal centrado */
-    .app-container {
-      display: table;
-      width: 90%;
-      max-width: 850px;
+    .container {
+      background-color: #1e1e1e;
+      border-radius: 20px;
+      padding: 20px 16px;
+      width: 100%;
+      max-width: 380px;
       margin: 0 auto;
-      box-sizing: border-box;
-      padding: 20px;
-      background-color: #181818;
-      border: 1px solid #2a2a2a;
-      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
       text-align: left;
     }
 
-    .app-row {
-      display: table-row;
+    h2 { 
+      text-align: center; 
+      margin-top: 0; 
+      font-weight: 700; 
+      margin-bottom: 16px;
+      font-size: 1.35rem;
+      color: #ffffff;
     }
 
-    /* Panel Izquierdo: Crear y Lista de Notas */
-    .sidebar {
-      display: table-cell;
-      width: 38%;
-      vertical-align: top;
-      padding-right: 16px;
-      border-right: 1px solid #333;
+    /* Medidor Gráfico Flotante Oscuro */
+    .gauge-card {
+      background-color: #000000;
+      border-radius: 14px;
+      padding: 18px 14px 14px 14px;
+      margin-bottom: 16px;
+      border: 1px solid #222225;
     }
 
-    /* Panel Derecho: Editor y GitHub Sync */
-    .editor {
-      display: table-cell;
-      width: 62%;
-      vertical-align: top;
-      padding-left: 16px;
-    }
-
-    h3 {
-      margin-top: 0;
-      color: #00ff66;
-      font-size: 16px;
-    }
-
-    input, textarea {
+    .gauge-horiz-container {
+      display: table;
       width: 100%;
-      background: #222224;
-      border: 1px solid #333;
-      color: #fff;
-      border-radius: 6px;
-      padding: 10px;
-      margin-bottom: 8px;
-      box-sizing: border-box;
-      font-size: 14px;
+      margin-bottom: 12px;
     }
 
-    textarea {
-      height: 180px;
-      resize: vertical;
+    .gauge-label {
+      display: table-cell;
+      font-weight: 800;
+      font-style: italic;
+      font-size: 1.3rem;
+      vertical-align: middle;
+      width: 25px;
     }
 
-    button {
-      width: 100%;
-      padding: 10px;
-      background-color: #0a84ff;
-      border: none;
-      color: #fff;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-bottom: 8px;
-    }
+    .label-e { color: #ff3b30; text-align: left; }
+    .label-f { color: #ffffff; text-align: right; }
 
-    .btn-green {
-      background-color: #34c759;
-    }
-
-    .status {
-      font-size: 12px;
-      color: #8e8e93;
+    .bars-row {
+      display: table-cell;
+      vertical-align: middle;
       text-align: center;
-      margin-top: 6px;
     }
 
-    .notes-list {
-      margin-top: 8px;
-      max-height: 150px;
+    .segment {
+      display: inline-block;
+      width: 13%;
+      height: 12px;
+      background-color: #2a2a2d;
+      border-radius: 4px;
+      margin: 0 1px;
+      vertical-align: middle;
+    }
+
+    /* Colores de segmentos */
+    .segment.active.reserve { 
+      background-color: #ff3b30; 
+      box-shadow: 0 0 6px #ff3b30; 
+    }
+    .segment.active.normal { 
+      background-color: #ffffff; 
+      box-shadow: 0 0 6px #ffffff; 
+    }
+
+    .stats {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #8e8e93;
+      margin: 0;
+    }
+
+    /* Pestañas de 4 columnas */
+    .tabs-header {
+      background-color: #2c2c2e;
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .tab-btn {
+      float: left;
+      width: 25%;
+      padding: 8px 0;
+      border: none;
+      background: none;
+      color: #a1a1a6;
+      font-size: 0.68rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .tab-btn.active {
+      background-color: #3a3a3c;
+      color: #ffffff;
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Inputs y Botones */
+    label { 
+      display: block; 
+      font-size: 0.82rem; 
+      margin-bottom: 8px; 
+      color: #a1a1a6; 
+    }
+
+    input[type="number"], input[type="text"], select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #333;
+      background-color: #2c2c2e;
+      color: white;
+      font-size: 15px;
+      outline: none;
+      margin-bottom: 8px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background-color: #0a84ff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .btn-green { background-color: #28a745; }
+
+    /* Listas */
+    .history-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 220px;
       overflow-y: auto;
     }
 
-    .note-item {
-      background: #2c2c2e;
-      padding: 8px;
-      border-radius: 6px;
+    .history-item {
+      background-color: #2c2c2e;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      font-size: 0.82rem;
+      overflow: hidden;
+    }
+
+    .history-item .left { float: left; }
+    .history-item .right { float: right; font-weight: bold; color: #34c759; }
+
+    .history-item .date {
+      color: #a1a1a6;
+      font-size: 0.75rem;
+    }
+
+    .maint-card {
+      background-color: #2c2c2e;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-left: 4px solid #34c759;
+    }
+
+    .maint-card.due {
+      border-left-color: #ff3b30;
+      background-color: #2c1a1a;
+    }
+
+    .maint-header {
+      overflow: hidden;
       margin-bottom: 6px;
-      cursor: pointer;
     }
 
-    .note-title {
+    .maint-title {
+      float: left;
       font-weight: bold;
-      font-size: 13px;
-      color: #00ff66;
+      font-size: 0.88rem;
     }
 
-    .note-subtitle {
-      font-size: 11px;
-      color: #aaa;
+    .maint-status {
+      float: right;
+      font-size: 0.72rem;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .status-ok { background-color: rgba(52, 199, 89, 0.2); color: #34c759; }
+    .status-alert { background-color: rgba(255, 59, 48, 0.2); color: #ff3b30; }
+
+    .maint-body {
+      font-size: 0.76rem;
+      color: #a1a1a6;
+      overflow: hidden;
+    }
+
+    .maint-action {
+      margin-top: 8px;
+      background-color: #3a3a3c;
+      border: none;
+      color: white;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    /* Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #3a3a3c; border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+      background-color: white; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: #34c759; }
+    input:checked + .slider:before { left: 23px; }
+
+    .collapsible-content {
+      display: none;
+      margin-top: 8px;
+    }
+
+    .collapsible-content.open {
+      display: block;
+    }
+
+    /* Toast */
+    .toast-notificacion {
+      position: fixed;
+      top: 15px;
+      left: 5%;
+      width: 90%;
+      background: #00ff66;
+      color: #000;
+      font-weight: bold;
+      font-size: 0.9rem;
+      padding: 12px 0;
+      text-align: center;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      display: none;
     }
   </style>
 </head>
 <body>
 
-  <div class="viewport-center">
-    <div class="app-container">
-      <div class="app-row">
-        
-        <!-- Panel Izquierdo: Gestión de Notas -->
-        <div class="sidebar">
-          <h3>📝 Crear Nota</h3>
-          <input type="text" id="nota-titulo" placeholder="Título de la nota">
-          <input type="text" id="nota-subtitulo" placeholder="Subtítulo / Categoría">
-          <button onclick="crearNuevaNota()">➕ Nueva Nota</button>
+<!-- Toast Banner -->
+<div id="toast-kilometraje" class="toast-notificacion">
+  ✓ Kilometraje Actualizado
+</div>
 
-          <hr style="border-color: #333; margin: 12px 0;">
+<div class="wrapper-centrado">
+  <div class="container">
+    <h2>Control de Combustible</h2>
 
-          <h3>📂 Mis Notas</h3>
-          <div class="notes-list" id="lista-notas">
-            <div class="status">Sin notas cargadas</div>
+    <!-- Interruptor Modo Conducción -->
+    <div style="background: #2c2c2e; padding: 10px 14px; border-radius: 12px; margin-bottom: 14px; overflow: hidden;">
+      <span style="float: left; font-weight: 600; font-size: 0.88rem; color: #fff; margin-top: 2px;">🏎️ Modo Conducción GPS</span>
+      <div style="float: right;">
+        <label class="switch">
+          <input type="checkbox" id="toggle-conduccion" onchange="toggleModoConduccion(this)">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+    
+    <!-- Panel GPS en vivo -->
+    <div id="panel-conduccion" style="display: none; background: #000; border: 1px solid #333; border-radius: 14px; padding: 14px; margin-bottom: 16px; text-align: center;">
+      
+      <!-- Selector Carga / Peso Dinámico -->
+      <div style="margin-bottom: 10px; text-align: left;">
+        <label style="color:#a1a1a6; font-size:0.75rem; margin-bottom: 4px;">Carga / Condición de Viaje:</label>
+        <select id="select-modo-carga" style="padding: 8px 10px; font-size: 0.82rem; margin-bottom:0;">
+          <option value="1.0"> Solo (Estándar)</option>
+          <option value="1.15">👥 Con Pasajero (+15% consumo)</option>
+          <option value="1.25">📦 Carga / Equipaje (+25% consumo)</option>
+        </select>
+      </div>
+
+      <div style="font-size: 0.72rem; color: #8e8e93; text-transform: uppercase;">Recorrido Sesión Actual</div>
+      <div style="font-size: 2rem; font-weight: 800; color: #34c759; margin: 4px 0;" id="km-sesion-txt">0.0 km</div>
+      <div style="font-size: 0.78rem; color: #a1a1a6; margin-top: 6px;">
+        Velocidad: <b id="vel-txt" style="color:#fff;">0 km/h</b> | Promedio: <b id="vel-prom-txt" style="color:#34c759;">0.0 km/h</b> | Inc: <b id="inc-txt" style="color:#fff;">0°</b>
+      </div>
+    </div>
+
+    <!-- Medidor Gráfico -->
+    <div class="gauge-card">
+      <div class="gauge-horiz-container">
+        <div class="gauge-label label-e">E</div>
+        <div class="bars-row">
+          <div class="segment reserve" id="seg-1"></div>
+          <div class="segment normal" id="seg-2"></div>
+          <div class="segment normal" id="seg-3"></div>
+          <div class="segment normal" id="seg-4"></div>
+          <div class="segment normal" id="seg-5"></div>
+          <div class="segment normal" id="seg-6"></div>
+        </div>
+        <div class="gauge-label label-f">F</div>
+      </div>
+      <div class="stats">
+        <p style="margin:0;">Tanque: <span id="galones-txt">0.5</span> / <span id="capacidad-txt">2.3</span> Gal | Km: <span id="km-txt">39355.0</span></p>
+      </div>
+    </div>
+
+    <!-- Tarjeta Autonomía Estimada -->
+    <div style="background: #000000; border-radius: 14px; padding: 16px 12px; margin-bottom: 16px; text-align: center; border: 1px solid #222225;">
+      <div style="font-size: 0.75rem; color: #aaa; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">
+        AUTONOMÍA ESTIMADA
+      </div>
+      <div id="autonomia-txt" style="font-size: 2.1rem; font-weight: bold; color: #00ff66; margin: 4px 0;">
+        -- km
+      </div>
+      <div style="font-size: 0.82rem; color: #aaa;">
+        Distancia recorrida última sesión: <span id="distancia-recorrida-txt" style="color: #ffffff; font-weight: bold;">0.0 km</span>
+      </div>
+    </div>
+
+    <!-- Pestañas Integradas (4 Secciones) -->
+    <div class="tabs-header">
+      <button class="tab-btn active" onclick="switchTab(this, 'tab-combustible')">Combustible</button>
+      <button class="tab-btn" onclick="switchTab(this, 'tab-rutas')">Rutas</button>
+      <button class="tab-btn" onclick="switchTab(this, 'tab-tanqueos')">Tanqueos</button>
+      <button class="tab-btn" onclick="switchTab(this, 'tab-mantenimiento')">Mantenimiento</button>
+    </div>
+
+    <div class="tabs-content">
+      
+      <!-- Pestaña 1: Combustible -->
+      <div id="tab-combustible" class="tab-pane active">
+        <div style="margin-bottom: 12px;">
+          <button class="btn" onclick="toggleForm('form-km')">
+            Actualizar Kilometraje
+          </button>
+          <div id="form-km" class="collapsible-content">
+            <input type="number" id="input-km" placeholder="Ej: 12500">
+            <button class="btn" onclick="actualizarKm()">
+              Confirmar Kilometraje
+            </button>
           </div>
         </div>
 
-        <!-- Panel Derecho: Editor y GitHub Sync -->
-        <div class="editor">
-          <h3>⚙️ Sincronización</h3>
-          <input type="password" id="gh-token" placeholder="GitHub Access Token (PAT)">
-          
-          <textarea id="contenido-nota" placeholder="Escribe el contenido de tu nota aquí..."></textarea>
-
-          <button onclick="guardarEnGitHub()">💾 Guardar en GitHub</button>
-          <button class="btn-green" onclick="cargarDesdeGitHub()">🔄 Cargar de GitHub</button>
-
-          <div class="status" id="status-txt">Estado: Desconectado</div>
+        <div style="margin-bottom: 12px;">
+          <button class="btn btn-green" onclick="toggleForm('form-tanque')">
+            Cargar Tanque
+          </button>
+          <div id="form-tanque" class="collapsible-content">
+            <input type="number" id="input-galones" placeholder="Cantidad en Galones (ej: 1.5)">
+            <button class="btn btn-green" onclick="agregarCombustible()">
+              Confirmar Carga
+            </button>
+          </div>
         </div>
-
       </div>
+
+      <!-- Pestaña 2: Historial de Rutas (GPS) -->
+      <div id="tab-rutas" class="tab-pane">
+        <label style="margin-bottom:8px; font-weight:bold; color:#00ff66;">📍 Historial de Distancias (GPS)</label>
+        <ul class="history-list" id="historial-distancias-ul"></ul>
+      </div>
+
+      <!-- Pestaña 3: Historial de Tanqueos -->
+      <div id="tab-tanqueos" class="tab-pane">
+        <label style="margin-bottom:8px; font-weight:bold; color:#ffcc00;">⛽ Historial de Tanqueos</label>
+        <ul class="history-list" id="historial-ul"></ul>
+      </div>
+
+      <!-- Pestaña 4: Mantenimientos -->
+      <div id="tab-mantenimiento" class="tab-pane">
+        <div id="lista-mantenimientos"></div>
+        <div class="maint-card" style="margin-bottom: 10px; border-color: #34c759;">
+          <h4 style="margin: 0 0 8px 0; font-size: 0.85rem; color: #fff;">+ Agregar Mantenimiento</h4>
+          <input type="text" id="input-maint-nombre" placeholder="Pieza (ej. Guaya Clutch)">
+          <input type="number" id="input-maint-intervalo" placeholder="Intervalo Km (ej. 3000)">
+          <button class="btn btn-green" onclick="agregarNuevoMantenimiento()" style="padding: 8px; font-size: 0.85rem;">
+            Guardar
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
+</div>
 
-  <script>
-    var CONFIG = {
-      usuario: "georduran-lab",
-      repo: "intercomunicador",
-      archivo: "notas.json"
-    };
+<!-- Audio silencioso en Base64 para habilitar Media Session en pantalla de bloqueo -->
+<audio id="audio-silencioso" loop style="display: none;">
+  <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=" type="audio/wav">
+</audio>
 
-    var fileSHA = "";
-    var coleccionNotas = [];
-    var notaSeleccionadaIndex = -1;
+<script>
+  var CONFIG = {
+    capacidadTanque: 3.4,
+    kmPorGalon: 110
+  };
 
-    // En lugar de leer del navegador, defines el token fijo aquí:
-    var TOKEN_FIJO = "28221998";
+  var MANTENIMIENTOS_DEFAULT = [
+    { id: 'aceite', nombre: 'Cambio de Aceite', intervalo: 800, ultimoKm: 0 },
+    { id: 'cadena', nombre: 'Tensión de Cadena', intervalo: 100, ultimoKm: 0 },
+    { id: 'filtro', nombre: 'Filtro de Aire', intervalo: 6000, ultimoKm: 0 },
+    { id: 'balineras', nombre: 'Balineras', intervalo: 5000, ultimoKm: 0 },
+    { id: 'llantas', nombre: 'Revisión Llantas', intervalo: 12000, ultimoKm: 0 }
+  ];
 
-    // Y en las funciones cargarDesdeGitHub y guardarEnGitHub usas directamente TOKEN_FIJO:
-    xhr.setRequestHeader("Authorization", "token " + TOKEN_FIJO);
+  var datosGuardados = localStorage.getItem('estado_moto_se150');
+  var estado = datosGuardados ? JSON.parse(datosGuardados) : {
+    galonesActuales: 0.5,
+    kmActual: 39355,
+    distanciaSesion: 0,
+    historial: [],
+    historialDistancias: [],
+    mantenimientos: MANTENIMIENTOS_DEFAULT
+  };
 
-    function crearNuevaNota() {
-      var titulo = document.getElementById('nota-titulo').value.trim();
-      var subtitulo = document.getElementById('nota-subtitulo').value.trim();
-      var contenido = document.getElementById('contenido-nota').value;
+  if (!estado.mantenimientos || estado.mantenimientos.length === 0) {
+    estado.mantenimientos = MANTENIMIENTOS_DEFAULT;
+  }
+  if (!estado.historialDistancias) {
+    estado.historialDistancias = [];
+  }
 
-      if (!titulo) {
-        alert("Ingresa al menos un título para la nota.");
-        return;
-      }
+  function guardarEstado() {
+    localStorage.setItem('estado_moto_se150', JSON.stringify(estado));
+    renderizar();
+  }
 
-      var nuevaNota = {
-        titulo: titulo,
-        subtitulo: subtitulo,
-        contenido: contenido
-      };
+  function switchTab(btn, tabId) {
+    var btns = document.querySelectorAll('.tab-btn');
+    var panes = document.querySelectorAll('.tab-pane');
 
-      coleccionNotas.push(nuevaNota);
-      document.getElementById('nota-titulo').value = '';
-      document.getElementById('nota-subtitulo').value = '';
-      document.getElementById('contenido-nota').value = '';
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'tab-btn';
+    for (var j = 0; j < panes.length; j++) panes[j].className = 'tab-pane';
 
-      renderizarListaNotas();
+    btn.className = 'tab-btn active';
+    document.getElementById(tabId).className = 'tab-pane active';
+  }
+
+  function toggleForm(formId) {
+    var el = document.getElementById(formId);
+    if (!el) return;
+    if (el.className.indexOf('open') !== -1) {
+      el.className = 'collapsible-content';
+    } else {
+      el.className = 'collapsible-content open';
+    }
+  }
+
+  function actualizarKm() {
+    var inputKm = document.getElementById('input-km');
+    var nuevoKmVal = inputKm.value;
+    var nuevoKm = parseFloat(nuevoKmVal);
+
+    if (nuevoKmVal === "" || isNaN(nuevoKm)) {
+      alert("Ingresa un kilometraje válido.");
+      return;
     }
 
-    function seleccionarNota(index) {
-      notaSeleccionadaIndex = index;
-      var nota = coleccionNotas[index];
-      document.getElementById('nota-titulo').value = nota.titulo;
-      document.getElementById('nota-subtitulo').value = nota.subtitulo;
-      document.getElementById('contenido-nota').value = nota.contenido;
+    var kmRecorridos = nuevoKm - estado.kmActual;
+
+    if (kmRecorridos > 0) {
+      var galonesConsumidos = kmRecorridos / CONFIG.kmPorGalon;
+      estado.galonesActuales = Math.max(0, estado.galonesActuales - galonesConsumidos);
     }
 
-    function renderizarListaNotas() {
-      var contenedor = document.getElementById('lista-notas');
-      contenedor.innerHTML = '';
+    estado.kmActual = parseFloat(nuevoKm.toFixed(1));
+    inputKm.value = '';
+    toggleForm('form-km');
+    guardarEstado();
+    mostrarToastKilometraje();
+  }
 
-      if (coleccionNotas.length === 0) {
-        contenedor.innerHTML = '<div class="status">No hay notas guardadas</div>';
-        return;
+  function mostrarToastKilometraje() {
+    var toast = document.getElementById('toast-kilometraje');
+    if (!toast) return;
+    toast.style.display = 'block';
+    setTimeout(function() {
+      toast.style.display = 'none';
+    }, 2500);
+  }
+
+  function agregarCombustible() {
+    var inputGal = document.getElementById('input-galones');
+    var galonesNuevosVal = inputGal.value;
+    var galonesNuevos = parseFloat(galonesNuevosVal);
+
+    if (galonesNuevosVal === "" || isNaN(galonesNuevos) || galonesNuevos <= 0) {
+      alert("Ingresa una cantidad válida de galones.");
+      return;
+    }
+
+    estado.galonesActuales = Math.min(CONFIG.capacidadTanque, estado.galonesActuales + galonesNuevos);
+
+    var ahora = new Date();
+    var fechaHora = ahora.toLocaleDateString() + " " + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+    estado.historial.unshift({
+      fecha: fechaHora,
+      galones: galonesNuevos,
+      km: estado.kmActual.toFixed(1)
+    });
+
+    inputGal.value = '';
+    toggleForm('form-tanque');
+    guardarEstado();
+  }
+
+  function realizarMantenimiento(id) {
+    for (var i = 0; i < estado.mantenimientos.length; i++) {
+      if (estado.mantenimientos[i].id === id) {
+        estado.mantenimientos[i].ultimoKm = estado.kmActual;
+        break;
       }
+    }
+    guardarEstado();
+  }
 
-      for (var i = coleccionNotas.length - 1; i >= 0; i--) {
-        (function(index) {
-          var item = document.createElement('div');
-          item.className = 'note-item';
-          item.onclick = function() { seleccionarNota(index); };
+  function formatearDuracion(segundosTotales) {
+    if (segundosTotales < 60) {
+      return segundosTotales + " seg";
+    }
+    var minutos = Math.floor(segundosTotales / 60);
+    var segs = segundosTotales % 60;
+    if (minutos < 60) {
+      return minutos + "m " + segs + "s";
+    }
+    var horas = Math.floor(minutos / 60);
+    var minsRestantes = minutos % 60;
+    return horas + "h " + minsRestantes + "m";
+  }
 
-          var t = document.createElement('div');
-          t.className = 'note-title';
-          t.innerText = coleccionNotas[index].titulo;
+  function renderizar() {
+    document.getElementById('galones-txt').innerText = estado.galonesActuales.toFixed(1);
+    document.getElementById('capacidad-txt').innerText = CONFIG.capacidadTanque.toFixed(1);
+    document.getElementById('km-txt').innerText = estado.kmActual.toFixed(1);
 
-          var st = document.createElement('div');
-          st.className = 'note-subtitle';
-          st.innerText = coleccionNotas[index].subtitulo || 'Sin subtítulo';
+    var porcentaje = estado.galonesActuales / CONFIG.capacidadTanque;
+    var segmentosActivos = Math.round(porcentaje * 6);
 
-          item.appendChild(t);
-          item.appendChild(st);
-          contenedor.appendChild(item);
-        })(i);
+    for (var i = 1; i <= 6; i++) {
+      var seg = document.getElementById('seg-' + i);
+      if (seg) {
+        if (i <= segmentosActivos) {
+          if (i === 1) {
+            seg.className = 'segment active reserve';
+          } else {
+            seg.className = 'segment active normal';
+          }
+        } else {
+          seg.className = 'segment';
+        }
       }
     }
 
-    function cargarDesdeGitHub() {
-      var token = document.getElementById('gh-token').value.trim();
-      if (!token) {
-        document.getElementById('status-txt').innerText = "⚠️ Ingresa un GitHub Token válido.";
-        return;
+    // Historial Tanqueos
+    var historialUl = document.getElementById('historial-ul');
+    historialUl.innerHTML = '';
+
+    if (!estado.historial || estado.historial.length === 0) {
+      historialUl.innerHTML = '<li style="color:#a1a1a6; font-size:0.8rem; text-align:center; padding:10px;">Sin registros de tanqueo.</li>';
+    } else {
+      for (var j = 0; j < estado.historial.length; j++) {
+        var item = estado.historial[j];
+        var li = document.createElement('li');
+        li.className = 'history-item';
+        li.innerHTML = '<div class="left"><div><strong>' + item.km + ' Km</strong></div><div class="date">' + item.fecha + '</div></div><div class="right">+' + item.galones.toFixed(1) + ' Gal</div>';
+        historialUl.appendChild(li);
       }
-      localStorage.setItem('gh_pat_token', token);
-      document.getElementById('status-txt').innerText = "⏳ Cargando desde GitHub...";
+    }
 
-      var url = "https://api.github.com/repos/" + CONFIG.usuario + "/" + CONFIG.repo + "/contents/" + CONFIG.archivo;
+    // Historial Distancias (GPS / Rutas)
+    var distanciasUl = document.getElementById('historial-distancias-ul');
+    distanciasUl.innerHTML = '';
 
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", url, true);
-      xhr.setRequestHeader("Authorization", "token " + token);
+    if (!estado.historialDistancias || estado.historialDistancias.length === 0) {
+      distanciasUl.innerHTML = '<li style="color:#a1a1a6; font-size:0.8rem; text-align:center; padding:10px;">Sin recorridos registrados aún.</li>';
+    } else {
+      for (var d = 0; d < estado.historialDistancias.length; d++) {
+        var r = estado.historialDistancias[d];
+        var liDist = document.createElement('li');
+        liDist.className = 'history-item';
+        var velPromTxt = r.velPromedio ? r.velPromedio + ' km/h' : '--';
+        liDist.innerHTML = 
+          '<div class="left">' +
+            '<div><strong>' + parseFloat(r.distancia).toFixed(1) + ' km</strong></div>' +
+            '<div class="date">' + r.fecha + ' | ⏱️ ' + r.duracion + '</div>' +
+          '</div>' +
+          '<div class="right" style="color:#00ff66; text-align:right;">' +
+            '<div>⚡ ' + velPromTxt + '</div>' +
+            '<div style="font-size:0.7rem; color:#8e8e93;">Promedio</div>' +
+          '</div>';
+        distanciasUl.appendChild(liDist);
+      }
+    }
 
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-            var data = JSON.parse(xhr.responseText);
-            fileSHA = data.sha;
-            var jsonTexto = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
-            try {
-              coleccionNotas = JSON.parse(jsonTexto);
-              renderizarListaNotas();
-              document.getElementById('status-txt').innerText = "✅ Sincronizado correctamente.";
-            } catch(e) {
-              document.getElementById('status-txt').innerText = "⚠️ Formato de archivo incompatible.";
+    // Mantenimientos
+    var mantContainer = document.getElementById('lista-mantenimientos');
+    mantContainer.innerHTML = '';
+
+    for (var k = 0; k < estado.mantenimientos.length; k++) {
+      var m = estado.mantenimientos[k];
+      var kmTranscurridos = estado.kmActual - m.ultimoKm;
+      var kmRestantes = m.intervalo - kmTranscurridos;
+      var requiereAtencion = kmRestantes <= 0;
+
+      var card = document.createElement('div');
+      card.className = 'maint-card' + (requiereAtencion ? ' due' : '');
+      card.innerHTML = 
+        '<div class="maint-header">' +
+          '<div class="maint-title">' + m.nombre + '</div>' +
+          '<span class="maint-status ' + (requiereAtencion ? 'status-alert' : 'status-ok') + '">' + (requiereAtencion ? 'REVISIÓN' : 'OK') + '</span>' +
+        '</div>' +
+        '<div class="maint-body">' +
+          '<span style="float:left;">Último: ' + m.ultimoKm.toFixed(1) + ' Km</span>' +
+          '<span style="float:right;">' + (requiereAtencion ? '¡Vencido por ' + Math.abs(kmRestantes).toFixed(1) + ' Km!' : 'Faltan: ' + kmRestantes.toFixed(1) + ' Km') + '</span>' +
+        '</div>' +
+        '<button class="maint-action" onclick="realizarMantenimiento(\'' + m.id + '\')">Marcar Realizado Hoy (' + estado.kmActual.toFixed(1) + ' Km)</button>';
+      
+      mantContainer.appendChild(card);
+    }
+
+    actualizarAutonomia();
+  }
+
+  function actualizarAutonomia() {
+    var kmRestantes = estado.galonesActuales * CONFIG.kmPorGalon;
+    var elAutonomia = document.getElementById('autonomia-txt');
+    var elDistancia = document.getElementById('distancia-recorrida-txt');
+
+    if (elAutonomia) {
+      elAutonomia.innerText = kmRestantes.toFixed(1) + ' km';
+      if (kmRestantes <= 25) {
+        elAutonomia.style.color = "#ff3333";
+      } else if (kmRestantes <= 50) {
+        elAutonomia.style.color = "#ffbb33";
+      } else {
+        elAutonomia.style.color = "#00ff66";
+      }
+    }
+
+    if (elDistancia) {
+      var dist = estado.distanciaSesion || 0;
+      elDistancia.innerText = dist.toFixed(1) + ' km';
+    }
+  }
+
+  /* GPS & Sensores con Consumo Dinámico */
+  var gpsWatchId = null;
+  var ultimaPosicion = null;
+  var tiempoInicioSesion = null;
+  var intervaloMediaSession = null;
+
+  function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
+    var R = 6371;
+    var dLat = (lat2 - lat1) * Math.PI / 180;
+    var dLon = (lon2 - lon1) * Math.PI / 180;
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }
+
+  /* --- CONTROL MEDIA SESSION (PANTALLA DE BLOQUEO) --- */
+  function activarNotificacionPantallaBloqueo() {
+    var audio = document.getElementById('audio-silencioso');
+    if (audio) {
+      audio.play().then(function() {
+        if ('mediaSession' in navigator) {
+          navigator.mediaSession.playbackState = "playing";
+          actualizarInfoPantallaBloqueo();
+          if (!intervaloMediaSession) {
+            intervaloMediaSession = setInterval(actualizarInfoPantallaBloqueo, 2000);
+          }
+        }
+      }).catch(function(err) {
+        console.log("Reproducción automática bloqueada por el navegador: " + err);
+      });
+    }
+  }
+
+  function actualizarInfoPantallaBloqueo() {
+    if ('mediaSession' in navigator) {
+      var km = (estado.distanciaSesion || 0).toFixed(2);
+      var vel = (document.getElementById('vel-txt') ? document.getElementById('vel-txt').innerText : "0 km/h");
+
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: 'Modo Conducción Activo 🏍️',
+        artist: 'Recorrido: ' + km + ' km',
+        album: 'Velocidad: ' + vel,
+        artwork: [
+          { 
+            src: 'https://cdn-icons-png.flaticon.com/512/2972/2972185.png', 
+            sizes: '512x512', 
+            type: 'image/png' 
+          }
+        ]
+      });
+    }
+  }
+
+  function desactivarNotificacionPantallaBloqueo() {
+    var audio = document.getElementById('audio-silencioso');
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+
+    if (intervaloMediaSession) {
+      clearInterval(intervaloMediaSession);
+      intervaloMediaSession = null;
+    }
+
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = "none";
+    }
+  }
+
+  function toggleModoConduccion(element) {
+    var panel = document.getElementById('panel-conduccion');
+
+    if (element.checked) {
+      if ("geolocation" in navigator) {
+        panel.style.display = "block";
+        ultimaPosicion = null;
+        estado.distanciaSesion = 0;
+        tiempoInicioSesion = new Date();
+
+        document.getElementById('km-sesion-txt').innerText = "0.0 km";
+        document.getElementById('vel-prom-txt').innerText = "0.0 km/h";
+
+        activarNotificacionPantallaBloqueo();
+
+        gpsWatchId = navigator.geolocation.watchPosition(
+          function(pos) {
+            var lat = pos.coords.latitude;
+            var lon = pos.coords.longitude;
+            var velocidadMps = pos.coords.speed || 0;
+            var velocidadKmh = Math.round(velocidadMps * 3.6);
+            
+            document.getElementById('vel-txt').innerText = velocidadKmh + " km/h";
+
+            if (ultimaPosicion) {
+              var dist = calcularDistanciaKm(ultimaPosicion.lat, ultimaPosicion.lon, lat, lon);
+              if (dist > 0.005) { 
+                estado.kmActual = parseFloat((estado.kmActual + dist).toFixed(1));
+                estado.distanciaSesion = (estado.distanciaSesion || 0) + dist;
+                
+                // --- CÁLCULO DE CONSUMO DINÁMICO ---
+                var factorPeso = parseFloat(document.getElementById('select-modo-carga').value) || 1.0;
+                
+                var factorVelocidad = 1.0;
+                if (velocidadKmh > 75) {
+                  factorVelocidad = 1.35; // Alta velocidad / resistencia del aire
+                } else if (velocidadKmh > 60) {
+                  factorVelocidad = 1.15;
+                } else if (velocidadKmh < 15 && velocidadKmh > 2) {
+                  factorVelocidad = 1.25; // Detenciones / arranques
+                }
+
+                var anguloActual = Math.abs(parseInt(document.getElementById('inc-txt').innerText) || 0);
+                var factorInclinacion = (anguloActual > 12) ? 1.20 : 1.0; // Inclinación en subida
+
+                var factorTotal = factorVelocidad * factorPeso * factorInclinacion;
+                var galonesConsumidos = (dist / CONFIG.kmPorGalon) * factorTotal;
+
+                estado.galonesActuales = Math.max(0, estado.galonesActuales - galonesConsumidos);
+                
+                guardarEstado();
+                document.getElementById('km-sesion-txt').innerText = estado.distanciaSesion.toFixed(1) + " km";
+              }
             }
-          } else if (xhr.status === 404) {
-            document.getElementById('status-txt').innerText = "📄 Archivo notas.json no existe en GitHub. Crea una nota y guarda.";
-          } else {
-            document.getElementById('status-txt').innerText = "❌ Error (HTTP " + xhr.status + ").";
-          }
-        }
-      };
 
-      xhr.onerror = function () {
-        document.getElementById('status-txt').innerText = "❌ Error de red.";
-      };
+            // Cálculo en vivo de velocidad promedio
+            if (tiempoInicioSesion) {
+              var horasTranscurridas = (new Date() - tiempoInicioSesion) / (1000 * 60 * 60);
+              if (horasTranscurridas > 0 && estado.distanciaSesion > 0) {
+                var velProm = (estado.distanciaSesion / horasTranscurridas).toFixed(1);
+                document.getElementById('vel-prom-txt').innerText = velProm + " km/h";
+              }
+            }
 
-      xhr.send();
-    }
+            ultimaPosicion = { lat: lat, lon: lon };
+          },
+          function(err) { 
+            alert("Error GPS (" + err.code + "): " + err.message); 
+          },
+          { enableHighAccuracy: true, maximumAge: 1000, timeout: 5000 }
+        );
+      } else {
+        alert("Tu navegador no soporta GPS.");
+        element.checked = false;
+      }
+      activarAcelerometro();
+    } else {
+      // Finalizar Modo Conducción en silencio
+      panel.style.display = "none";
+      desactivarNotificacionPantallaBloqueo();
 
-    function guardarEnGitHub() {
-      var token = document.getElementById('gh-token').value.trim();
+      if (gpsWatchId !== null) {
+        navigator.geolocation.clearWatch(gpsWatchId);
+        gpsWatchId = null;
+      }
+      window.removeEventListener('devicemotion', manejarInclinacion);
 
-      if (!token) {
-        alert("Necesitas ingresar el Token de GitHub para poder guardar.");
-        return;
+      var distanciaFinal = estado.distanciaSesion || 0;
+      if (distanciaFinal > 0 && tiempoInicioSesion) {
+        var tiempoFin = new Date();
+        var segundosDuracion = Math.round((tiempoFin - tiempoInicioSesion) / 1000);
+        var duracionTexto = formatearDuracion(segundosDuracion);
+        var fechaHoraTexto = tiempoFin.toLocaleDateString() + " " + tiempoFin.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+        var horasTotales = segundosDuracion / 3600;
+        var velPromFinal = horasTotales > 0 ? (distanciaFinal / horasTotales).toFixed(1) : "0.0";
+
+        estado.historialDistancias.unshift({
+          fecha: fechaHoraTexto,
+          distancia: distanciaFinal,
+          duracion: duracionTexto,
+          velPromedio: velPromFinal,
+          simulado: false
+        });
+
+        guardarEstado();
       }
 
-      var titulo = document.getElementById('nota-titulo').value.trim();
-      var subtitulo = document.getElementById('nota-subtitulo').value.trim();
-      var contenido = document.getElementById('contenido-nota').value;
+      tiempoInicioSesion = null;
+    }
+  }
 
-      if (notaSeleccionadaIndex >= 0 && coleccionNotas[notaSeleccionadaIndex]) {
-        coleccionNotas[notaSeleccionadaIndex].titulo = titulo || coleccionNotas[notaSeleccionadaIndex].titulo;
-        coleccionNotas[notaSeleccionadaIndex].subtitulo = subtitulo;
-        coleccionNotas[notaSeleccionadaIndex].contenido = contenido;
-      } else if (titulo) {
-        coleccionNotas.push({ titulo: titulo, subtitulo: subtitulo, contenido: contenido });
-      }
+  function activarAcelerometro() {
+    window.addEventListener('devicemotion', manejarInclinacion);
+  }
 
-      document.getElementById('status-txt').innerText = "⏳ Guardando en GitHub...";
+  function manejarInclinacion(event) {
+    var x = event.accelerationIncludingGravity ? event.accelerationIncludingGravity.x || 0 : 0;
+    var y = event.accelerationIncludingGravity ? event.accelerationIncludingGravity.y || 0 : 0;
+    var angulo = Math.round(Math.atan2(x, y) * (180 / Math.PI));
+    document.getElementById('inc-txt').innerText = Math.abs(angulo) + "°";
+  }
 
-      var jsonTexto = JSON.stringify(coleccionNotas);
-      var textoBase64 = btoa(unescape(encodeURIComponent(jsonTexto)));
-      var url = "https://api.github.com/repos/" + CONFIG.usuario + "/" + CONFIG.repo + "/contents/" + CONFIG.archivo;
+  function agregarNuevoMantenimiento() {
+    var nombreInput = document.getElementById('input-maint-nombre').value;
+    var intervaloVal = document.getElementById('input-maint-intervalo').value;
+    var intervalo = parseFloat(intervaloVal);
 
-      var bodyData = {
-        message: "Actualización de colección de notas",
-        content: textoBase64
-      };
-
-      if (fileSHA !== "") {
-        bodyData.sha = fileSHA;
-      }
-
-      var xhr = new XMLHttpRequest();
-      xhr.open("PUT", url, true);
-      xhr.setRequestHeader("Authorization", "token " + token);
-      xhr.setRequestHeader("Content-Type", "application/json");
-
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200 || xhr.status === 201) {
-            var resData = JSON.parse(xhr.responseText);
-            fileSHA = resData.content.sha;
-            renderizarListaNotas();
-            document.getElementById('status-txt').innerText = "🚀 Guardado exitosamente.";
-          } else {
-            document.getElementById('status-txt').innerText = "❌ Error al guardar. Revisa permisos.";
-          }
-        }
-      };
-
-      xhr.onerror = function () {
-        document.getElementById('status-txt').innerText = "❌ Error de red.";
-      };
-
-      xhr.send(JSON.stringify(bodyData));
+    if (!nombreInput || isNaN(intervalo) || intervalo <= 0) {
+      alert("Ingresa un nombre e intervalo válido.");
+      return;
     }
 
-    if (document.getElementById('gh-token').value) {
-      cargarDesdeGitHub();
+    estado.mantenimientos.push({
+      id: 'maint_' + new Date().getTime(),
+      nombre: nombreInput,
+      intervalo: intervalo,
+      ultimoKm: estado.kmActual
+    });
+
+    document.getElementById('input-maint-nombre').value = '';
+    document.getElementById('input-maint-intervalo').value = '';
+    guardarEstado();
+  }
+
+  /* 🧪 SIMULACRO DESDE CONSOLA */
+  function simularRecorrido(distanciaKm, minutosDuracion) {
+    var km = parseFloat(distanciaKm);
+    if (isNaN(km) || km <= 0) {
+      console.error("❌ Por favor ingresa una distancia válida en Km. Ejemplo: simularRecorrido(10)");
+      return;
     }
-  </script>
+
+    var duracionMin = minutosDuracion ? parseInt(minutosDuracion) : Math.floor(Math.random() * 15) + 5;
+    var segundosTotales = duracionMin * 60;
+    var duracionTexto = formatearDuracion(segundosTotales);
+    var horasTotales = segundosTotales / 3600;
+    var velPromSimulada = (km / horasTotales).toFixed(1);
+
+    estado.kmActual = parseFloat((estado.kmActual + km).toFixed(1));
+    estado.distanciaSesion = km;
+
+    // Simulación aplicando factor promedio por velocidad simulada
+    var factorSimulado = velPromSimulada > 70 ? 1.3 : 1.1;
+    var galonesConsumidos = (km / CONFIG.kmPorGalon) * factorSimulado;
+    estado.galonesActuales = Math.max(0, estado.galonesActuales - galonesConsumidos);
+
+    var ahora = new Date();
+    var fechaHoraTexto = ahora.toLocaleDateString() + " " + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+    estado.historialDistancias.unshift({
+      fecha: fechaHoraTexto,
+      distancia: km,
+      duracion: duracionTexto,
+      velPromedio: velPromSimulada,
+      simulado: true
+    });
+
+    guardarEstado();
+
+    console.log("%c✅ Simulacro Exitoso", "color: #00ff66; font-size: 14px; font-weight: bold;");
+    console.log("📍 Distancia añadida: " + km + " km");
+    console.log("⚡ Vel. Promedio: " + velPromSimulada + " km/h");
+    console.log("⏱️ Duración simulada: " + duracionTexto);
+    console.log("⛽ Galones consumidos (ajustados): " + galonesConsumidos.toFixed(3) + " Gal");
+    console.log("📊 Km actual de la moto: " + estado.kmActual.toFixed(1) + " km");
+  }
+
+  // Carga inicial
+  renderizar();
+</script>
 </body>
 </html>
